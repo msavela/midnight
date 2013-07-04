@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Midnight</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0"/>
+	<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="style.css" type="text/css" />
+	<link rel="stylesheet" href="tomorrow.css" type="text/css" />
+	<script src="highlight.pack.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+	<aside>
+		<div style="padding: 15px">
+
+			<h1><span class="midnight">Midnight</span><div class="moon"></div></h1>
+
+			<ul>
+				<li><a href="#">Overview</a></li>
+				<li><a href="https://github.com/msavela/midnight">Github</a></li>
+			</ul>
+
+			<h2>Guide</h2>
+
+			<ul>
+				<li><a href="#getting-started">Getting started</a></li>
+				<li><a href="#new-application">New application</a></li>
+				<li><a href="#routes">Routes</a></li>
+				<li><a href="#templates">Templates</a></li>
+				<li><a href="#middleware">Middleware</a></li>
+				<li><a href="#static">Static files</a></li>
+				<li><a href="#dcss">Dynamic stylesheets</a></li>
+				<li><a href="#errors">Error handling</a></li>
+				<li><a href="#plugins">Plugins</a></li>
+				<li><a href="#examples">Examples</a></li>
+			</ul>
+
+			<h2>API Reference</h2>
+
+			<ul>
+				<li><a href="#application">Application</a></li>
+				<li><a href="#route">Route</a></li>
+				<li><a href="#request">Request</a></li>
+				<li><a href="#response">Response</a></li>
+			</ul>
+		</div>
+	</aside>
+	<section id="home">
+		<h1 class="overview">Overview</h1>
+		<h3><span class="midnight">Midnight</span> is an open source web framework for node.js that makes building modern web applications easy.</h3>
+		<p>Features:</p>
+		<ul>
+			<li>Easy to learn</li>
+			<li>No 3rd-party dependencies</li>
+			<li>Compatible with <a href="http://www.senchalabs.org/connect">Connect</a> framework</li>
+			<li>Plays nice with any template engine</li>
+			<li>A flexible plugin system</li>
+		</ul>
+		<p>Here's a simple <span class="midnight">Midnight</span> application:</p>
+		<pre><code class="javascript">var app = require('midnight');
+
+app.route("/", function(request, response) {
+	response.send('Hello world!');
+});
+
+app.start();
+</code></pre>
+		<p>That's it.</p>
+	</section>
+	<section id="guide">
+		<h1>Guide</h1>
+
+		<h2 id="getting-started">Getting started</h2>
+		<p>Let's take a closer look on how to get application up and running.</p>
+		<p>Install <span class="midnight">Midnight</span> using <a href="https://npmjs.org">Node Packaged Modules</a>:</p>
+		<pre><code class="bash"><span>npm -g install midnight</span></code></pre>
+
+		<p><a href="http://www.senchalabs.org/connect">Connect</a> framework is optional, but highly recommended:</p>
+		<pre><code class="bash"><span>npm -g install connect</span></code></pre>
+
+		<p>Prerequisites for running a <span class="midnight">Midnight</span> application are now installed. Next step is to create a new application.</p>
+
+		<h2 id="new-application">New application</h2>
+		<p>Creating a new application is effortless:</p>
+		<pre><code class="bash"><span>midnight create example</span></code></pre>
+
+		<p>Following directory structure is created:</p>
+		<ul>
+			<li>
+				example/
+				<ul>
+					<li>app.js</li>
+					<li>
+						static/
+						<ul>
+							<li>
+								stylesheet/
+								<ul>
+									<li>style.css</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li>
+						views/
+						<ul>
+							<li>index.html</li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+		</ul>
+
+		<p>Next step is to run the application:</p>
+		<pre><code class="bash"><span>cd example</span>
+<span>node app.js</span></code></pre>
+
+		<p>Well done, application is now running at <a href="http://localhost:8080">http://localhost:8080</a>.</p>
+		<p>Scroll down to learn more about the <span class="midnight">Midnight</span> framework.</p>
+
+		<h2 id="routes">Routes</h2>
+		<p>Setting a new route is super easy:</p>
+
+		<pre><code class="javascript">app.route("/", function(request, response) {
+	response.status(200)
+		.content('text/plain')
+		.send('Hello world!');
+}).method(["GET", "POST"]); // Allow GET and POST requests
+</code></pre>
+
+		<p>Route parameters can be captured as shown below:</p>
+		<pre><code class="javascript">app.route("/post/:id", function(request, response) {
+	app.log.info('Get post id %s', request.params.id);
+	response.status(200)
+		.set('Content-Type', 'text/plain')
+		.send('Hello world!');
+}).get(); // Allow GET requests only
+</code></pre>
+
+		<p>See <a href="#route">Route</a> and <a href="#">app.route</a> for more detailed documentation.</p>
+
+		<h2 id="templates">Templates</h2>
+		<p><span class="midnight">Midnight</span> supports following template engines by default:</p>
+		<ul>
+			<li>Mustache</li>
+			<li>Hogan.js</li>
+			<li>Handlebars</li>
+		</ul>
+
+		<p>Use the following command to get full list of supported template engines:</p>
+		<pre><code class="bash"><span>midnight engines</span></code></pre>
+
+		<p>To use Hogan.js as a template engine:</p>
+		<pre><code class="javascript">app.engine(app.engines.hogan);</code></pre>
+		<p>Which is equivalent to this:</p>
+		<pre><code class="javascript">app.engine({
+	require: 'hogan.js',
+	cache: true,
+	compile: function(data, options, done) {
+		done(this.module.compile(data));
+	},
+	render: function(template, object, options, done) {
+		done(template.render(object));
+	}
+});
+</code></pre>
+
+		<p>Render a template:</p>
+
+		<pre><code class="javascript">response.status(200)
+	.render('index.html', { query: request.query });
+</code></pre>
+
+		<p>Here's how to create a new template engine wrapper:</p>
+		<pre><code class="javascript">app.engine({
+	require: 'hogan.js', // Will populate this.module with loaded module
+	cache: false, // Optional, by default every template will be cached in non-development mode
+	read: function(path, done) { // Optional
+		// Custom template reader
+		// Asynchronous operations are acceptable
+		// Path is absolute path to the template file
+
+		// this.module is the loaded module declared in this.require
+
+		fs.readFile(path, 'utf8', function(err, data) {
+			// Call 'done' once finished
+			done(err, data);
+		});
+	},
+	compile: function(data, options, done) { // Optional
+		// Compile the template
+		// Asynchronous operations are acceptable
+		// Data is string template
+		// template will be cached if 'cache' property is true or missing
+
+		// this.module is the loaded module declared in this.require
+
+		// Call 'done' once finished
+		done(this.module.compile(data));
+	},
+	render: function(template, object, options, done) { // Required
+		// Render the template
+		// Asynchronous operations are acceptable
+
+		// this.module is the loaded module declared in this.require
+
+		// Call 'done' once finished
+		done(template.render(object));
+	}
+});
+</code></pre>
+
+		<h2 id="middleware">Middleware</h2>
+		<p><span class="midnight">Midnight</span> is fully compatible with <a href="http://www.senchalabs.org/connect">Connect</a> framework.</p>
+
+		<p>Following example will populate request.query object containing HTTP GET parameters:</p>
+		<pre><code class="javascript">var connect = require('connect');
+
+// Use query parsing middleware for every requests
+app.use(connect.query());
+
+app.route("/", function(request, response) {
+	response.status(200).send(JSON.stringify(request.query));
+});
+</code></pre>
+
+		<p>In case a route specific middleware is required:</p>
+		<pre><code class="javascript">var connect = require('connect');
+
+app.route("/", function(request, response) {
+	response.status(200).send(JSON.stringify(request.body));
+}).use(connect.json()); // Use JSON middleware just for this route</code></pre>
+
+		<p>It's also possible to create a custom middleware:</p>
+		<pre><code class="javascript">app.use(function(request, response, next) {
+	// Set every response status to 200 by default
+	response.status(200);
+	next();
+});
+
+app.route("/", function(request, response) {
+	response.send("Response status is 200");
+})
+</code></pre>
+
+		<h2 id="static">Static files</h2>
+		<p>Serving static files with <span class="midnight">Midnight</span> and <a href="http://www.senchalabs.org/connect">Connect</a> is easy:</p>
+		<pre><code class="javascript">var connect = require('connect');
+
+app.use(connect.static(app.config.root + '/static'));
+</code></pre>
+		<p>Example above serves static files with a following directory layout:</p>
+
+		<ul>
+			<li>app.js</li>
+			<li>
+				static/
+				<ul>
+					<li>favicon.ico</li>
+					<li>
+						stylesheets/
+						<ul>
+							<li>style.css</li>
+						</ul>
+					</li>
+					<li>
+						javascripts/
+						<ul>
+							<li>utils.js</li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+		</ul>
+
+		<p>Requesting <a href="http://localhost:8080/stylesheets/style.css">http://localhost:8080/stylesheets/style.css</a> serves the stylesheets with ease.</p>
+
+		<h2 id="dcss">Dynamic stylesheets</h2>
+		<p>Using CSS preprocessors can greatly improve development speed and productivity.</p>
+		<p>Following examples will cover <a href="http://lesscss.org/">LESS</a>, <a href="http://sass-lang.com/">SASS</a> and <a href="http://learnboost.github.io/stylus/">Stylus</a>. However, there's plenty more to choose from.</p>
+		
+		<h3>LESS</h3>
+		<pre><code>var less = require('less-middleware');
+
+app.use(less({
+	src: app.config.root + '/less',
+	dest: app.config.root + '/static/stylesheet',
+	compress: true
+}));
+</code></pre>
+		<p>See <a href="https://github.com/emberfeather/less.js-middleware">less.js-middleware</a> for more details.</p>
+
+		<h3>SASS</h3>
+		<pre><code>var sass = require('node-sass');
+
+app.use(sass.middleware({
+	src: app.config.root + '/sass',
+	dest: app.config.root + '/static/stylesheet',
+	debug: true,
+	outputStyle: 'compressed'
+}));
+</code></pre>
+		<p>See <a href="https://github.com/andrew/node-sass">node-sass</a> for more details.</p>
+
+		<h3>Stylus</h3>
+		<pre><code>var stylus = require('stylus');
+
+app.use(stylus.middleware({
+	src: app.config.root + '/stylus',
+	dest: app.config.root + '/static/stylesheet',
+	compile: compile
+}));
+</code></pre>
+		<p>See <a href="https://github.com/LearnBoost/stylus/blob/master/docs/middleware.md">stylus</a> for more details.</p>
+
+		<h2 id="errors">Error handling</h2>
+		<p>In development mode it's recommended to use error handler middleware:</p>
+		<pre><code>var connect = require('connect');
+
+if(app.config.env == "development")
+	app.use(connect.errorHandler());
+</code></pre>
+
+		<h2 id="plugins">Plugins</h2>
+		<p><span class="midnight">Midnight</span> has a plugin system built-in to easily extend the application.</p>
+		<p>Here's how to create a new plugin:</p>
+		<pre><code class="javascript">var plugin = {
+	name: "plugin-name",
+	attach: function(options) {
+		// Called when plugin is attached
+		// Options can be passed as a parameter
+		// 'this' is the application context
+	},
+	init: function(next) {
+		// Called when the application is initialized
+		
+		// Extend the application
+		// Asynchronous operations are acceptable
+		// 'this' is the application context
+
+		// Call next() when the initialization is finished
+		next();
+	}
+}
+
+// Attach the plugin with optional parameters
+app.attach(plugin, { sky: 'blue' });
+</code></pre>
+		<p>Application server won't start until all the plugins are initialized.</p>
+
+		<h2 id="examples">Examples</h2>
+		<p>Plenty of more examples included with the source code.</p>
+		<p>Go to <a href="https://github.com/msavela/midnight">Github</a> and browse the repository.</p>
+	</section>
+	<section id="species">
+		<h1 id="api">API Reference</h1>
+
+		<h2 id="application">Application</h2>
+
+		<h3>app.configure(config)</h3>
+		<pre><code class="javascript">app.configure({
+	port: 9000,
+	views: '/templates'
+});
+
+app.log.info('Server will run at port %s', app.config.port);</code></pre>
+
+		<p>To reveal the default configuration:</p>
+		<pre><code class="javascript">app.log.info(JSON.stringify(app.config));
+
+{
+	'host': '127.0.0.1',
+	'port': 8080,
+	'views': '/views',
+	'root': '/application/root/path',
+	'env': 'development',
+	'log': 2, // app.log.level.info
+	'version': '0.0.1'
+}</code></pre>
+
+		<h3>app.start([config])</h3>
+		<p>Start the application.</p>
+		<pre><code class="javascript">app.start();</code></pre>
+
+		<p>Alternatively, start the server with configuration parameter.</p>
+
+		<pre><code class="javascript">app.start({
+	port: 9000
+});</code></pre>
+
+		<h3>app.log</h3>
+		<p>Set log level:</p>
+		<pre><code class="javascript">// Default logging level
+app.config.log = app.log.level.info;</code></pre>
+
+		<p>Logging.</p>
+		<pre><code class="javascript">// Trace
+app.log.trace('Finely detailed information');
+
+// Debug
+app.log.debug('Detailed information');
+
+// Info
+app.log.info('Interesting runtime events');
+
+// Warning
+app.log.warn('Runtime situations that are undesirable');
+
+// Error
+app.log.error('Runtime errors or unexpected conditions');
+
+// Fatal
+app.log.fatal('This is very bad');
+</code></pre>
+
+		<h3>app.route(pattern, [function])</h3>
+		<p>Declare a new route:</p>
+		<pre><code class="javascript">app.route('/post/:id', function() {
+	response.send(request.params.id);
+});</code></pre>
+
+		<p>It's possible to use regular expression as a pattern:</p>
+		<pre><code class="javascript">// Accept requests with url /post/{5-digit number}
+app.route(new RegExp('^/post/\d{5}$'), function() {
+	response.send('Success.');
+});</code></pre>
+
+		<p>Routes can be used like below to set additional parameters:</p>
+		<pre><code class="javascript">app.route('/', function() {
+	response.send('Hello world!');
+}).get(); // Allow GET requests only</code></pre>
+
+		<p>Leave function parameter out to simply include route specific middleware:</p>
+		<pre><code class="javascript">var connect = require('connect');
+
+// Use logging middleware for /
+app.route('/').use(connect.logger());</code></pre>
+
+		<p>See <a href="#route">Route</a> for more examples.</p>
+
+		<h3>app.engine(function)</h3>
+		<p>Set template engine.</p>
+		<pre><code class="javascript">app.engine(function(render, template, object, options) {
+	var buffer = '';
+	require('mu2').compileAndRender(template, object).on('data', function(data) {
+		buffer += data;
+	}).on('end', function() {
+		render(buffer);
+	});
+});</code></pre>
+
+		<h3>app.utils</h3>
+		<p>Provides some useful tools, see <a href="https://github.com/msavela/midnight">Github</a> for complete list.</a>
+
+		<h3>app.use(function)</h3>
+		<p>Use middleware for all the requests.</p>
+		<pre><code class="javascript">var connect = require('connect');
+
+// Parse query parameters and place them in request.query object
+app.use(connect.query());</code></pre>
+
+		<h3>app.attach(plugin, [options])</h3>
+		<p>Attach a plugin to the application.</p>
+		<pre><code class="javascript">app.attach(plugin);</code></pre>
+
+		<p>See <a href="#plugins">Plugins</a> for more examples.</p>
+
+		<h2 id="route">Route</h2>
+		<p>See <a href="#routes">Routes</a> for examples on how to set routes.</p>
+
+		<h3>route.method(method)</h3>
+		<p>Specify allowed methods for the route</p>
+		<pre><code class="javascript">// Accept GET requests
+route.method('GET');
+
+// Accept GET, POST and DELETE requests
+route.method(['GET', 'POST', 'DELETE']);</code></pre>
+
+		<p>Above is equivalent to:</p>
+		<pre><code class="javascript">// Accept GET requests
+route.get();
+
+// Accept GET, POST and DELETE requests
+route.get().post().delete();</code></pre>
+
+		<p>All HTTP methods are allowed in case no method is specified.</p>
+
+		<h3>route.get()</h3>
+		<p>Allow GET requests.</p>
+		<pre><code class="javascript">route.get();</code></pre>
+		<h3>route.post()</h3>
+		<p>Allow POST requests.</p>
+		<pre><code class="javascript">route.post();</code></pre>
+		<h3>route.put()</h3>
+		<p>Allow PUT requests.</p>
+		<pre><code class="javascript">route.put();</code></pre>
+		<h3>route.delete()</h3>
+		<p>Allow DELETE requests.</p>
+		<pre><code class="javascript">route.delete();</code></pre>
+
+		<h3>route.use(function)</h3>
+		<p>Use middleware just for this route.</p>
+		<pre><code class="javascript">var connect = require('connect');
+
+// http://localhost:8080/post?id=24
+app.route("/post", function(request, response) {
+	// Render: { id: 24 }
+	response.status(200).send(JSON.stringify(request.query))
+}).use(connect.query());</code></pre>
+
+		<h2 id="request">Request</h2>
+
+		<h3>route.method</h3>
+		<p>Get request method.</p>
+
+		<h3>request.get(header)</h3>
+		<p>Get request header.</p>
+		<pre><code class="javascript">request.get('Content-Type');</code></pre>
+
+		<h3>request.content()</h3>
+		<p>Get request <code>Content-Type</code>.</p>
+		<pre><code class="javascript">request.content();</code></pre>
+
+		<h2 id="response">Response</h2>
+
+		<h3>response.status(code)</h3>
+		<p>Set status code.</p>
+		<pre><code class="javascript">response.status(200);</code></pre>
+
+		<h3>response.set(key, [value])</h3>
+		<p>Set response header.</p>
+		<pre><code class="javascript">// Set response header
+response.set('Access-Control-Allow-Origin', '*');
+
+// Remove response header
+response.set('Access-Control-Allow-Origin');</code></pre>
+
+		<h3>response.get(header)</h3>
+		<p>Get response header.</p>
+		<pre><code class="javascript">response.get('Content-Type');</code></pre>
+
+		<h3>response.content([type])</h3>
+		<p>Set <code>Content-Type</code> response header.</p>
+		<pre><code class="javascript">// Set response header
+response.content('image/png');
+
+// Get response header
+response.content();</code></pre>
+
+		<h3>response.redirect(location)</h3>
+		<p>Redirect to a location.</p>
+		<pre><code class="javascript">response.redirect('/');</code></pre>
+
+		<h3>response.encoding(encoding)</h3>
+		<p>Set response encoding.</p>
+		<pre><code class="javascript">response.encoding('utf-8');</code></pre>
+
+		<h3>response.send(response)</h3>
+		<p>Send a response.</p>
+		<pre><code class="javascript">// Content-Type: text/html
+response.send('Hello world!');</code></pre>
+
+		<p>Depending on the object type different <code>Content-Type</code> header is used:</p>
+
+		<pre><code class="javascript">// Content-Type: application/json
+response.send({ name: 'Harry' });
+
+// Content-Type: application/json
+response.send(['Apples', 'Oranges']);
+
+// Content-Type: application/octet-stream
+response.send(new Buffer('Hello world!'));</code></pre>
+
+		<p>This method automatically adds <code>Content-Length</code> header for the response.</p>
+
+		<h3>response.render(template, [variables], [options])</h3>
+		<p>Render a template.</p>
+		<pre><code class="javascript"> // Render without template variables
+response.render('index.html');
+
+// Render with template variables
+response.render('index.html', { name: 'Harry' });</code></pre>
+
+		<p>Include <code>options</code> parameter to pass options to the template engine:</p>
+		<pre><code class="javascript">response.render('index.html', { name: 'Harry' }, { cache: true });</code></pre>
+		<p>Please note, template engine wrapper needs to take care of the options.</p>
+
+		<p>Template variables will always contain <code>globals</code> and <code>config</code> objects:</p>
+
+		<pre><code class="javascript">app.globals.title = 'Page title';</code></pre>
+
+		<p>While the template could look like this:</p>
+		<pre><code class="html">&lt;html&gt;
+&lt;head&gt;
+	&lt;title&gt;&#123;&#123; globals.title &#125;&#125;&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;p&gt;Server is running at port &#123;&#123; config.port &#125;&#125;.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+	
+		<p>Which renders to:</p>
+		<pre><code class="html">&lt;html&gt;
+&lt;head&gt;
+	&lt;title&gt;Page title&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;p&gt;Server is running at port 8080.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+	</section>
+</body>
+</html>

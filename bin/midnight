@@ -1,0 +1,131 @@
+#!/usr/bin/env node
+
+var args = process.argv.splice(2);
+var cmd = args[0];
+
+var os = require('os'),
+	fs = require('fs'),
+	pkg = require('../package.json'),
+	version = pkg.version
+	midnight = require('../');
+
+var files = {
+	app: function(engine) {
+		return [
+			'var app = require(\'midnight\')',
+			this.connect(),
+			'// ' + Object.keys(midnight.engines).join(' '),
+			'app.engine(app.engines.' + engine + ');',
+			'',
+			'app.route("/", function(request, response) {',
+			'	response.render(\'index.html\', { world: \'world!\' });',
+			'});',
+			'',
+			'app.start();'
+		].join(os.EOL);
+	},
+	connect: function() {
+		try {
+			require.resolve("connect");
+			return [
+				'var connect = require(\'connect\');',
+				'',
+				'// Use query-string middleware',
+				'app.use(connect.query());',
+				'app.use(connect.static(app.config.root + \'/static\'));',
+				'',
+				'if(app.config.env == "development")',
+				'	app.use(connect.errorHandler());',
+				''
+			].join(os.EOL);
+		} catch(err) {
+			return [''].join(os.EOL);
+		}
+	},
+	template: function() {
+		return [
+			'<!DOCTYPE html>',
+			'<html>',
+			'	<head>',
+			'		<title>{{ globals.title }}</title>',
+			'		<link rel=\'stylesheet\' href=\'/stylesheet/style.css\' />',
+			'	</head>',
+			'	<body>',
+			'		<p>Hello {{ world }}</p>',
+			'	</body>',
+			'</html>'
+		].join(os.EOL);
+	},
+	stylesheet: function() {
+		return [
+			'body {',
+			'	font: 14px Georgia, sans-serif;',
+			'}'
+		].join(os.EOL);
+	},
+	package: function(name) {
+		return JSON.stringify({
+			name: name,
+			version: '0.0.1',
+			private: true,
+			scripts: { start: 'node app.js' }
+		}, null, 2);
+	}
+};
+
+function mkdir(path, callback) {
+	var path = path.split("/");
+	for(var i=0;i<path.length;i++) {
+		try {
+			fs.mkdirSync(path.slice(0, i+1).join('/'));
+		} catch(err) {
+			continue;
+		}
+	}
+}
+
+function write(path, data) {
+	fs.writeFileSync(path, data);
+}
+
+function abort(str) {
+	console.error(str);
+	process.exit(1);
+}
+
+if(cmd == 'version')
+	abort(version);
+else if(cmd == 'create') {
+
+	var path = args[1] || 'application';
+	var engine = args[2] || 'default';
+
+	if(fs.existsSync(path))
+		abort(path + " already exists.");
+
+	mkdir(path);
+
+	write(path + '/app.js', files.app(engine));
+	write(path + '/package.json', files.package(path));
+
+	mkdir(path + '/static/stylesheet');
+	write(path + '/static/stylesheet/style.css', files.stylesheet());
+
+	mkdir(path + '/views');
+	write(path + '/views/index.html', files.template());
+
+	abort('Created new application \'' + path + '\'');
+}
+else if(cmd == 'help') {
+	var help = args[1];
+	if(help == 'create')
+		abort('Usage: midnight create name [' + Object.keys(midnight.engines).join('|') + ']');
+	else if(help == 'engines')
+		abort('Usage: midnight engines');
+	else
+		abort("Commands: help create engines");
+}
+else if(cmd == 'engines')
+	abort(Object.keys(midnight.engines).join(' '));
+else
+	abort('Unknown command');

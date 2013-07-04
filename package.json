@@ -1,0 +1,31 @@
+{
+    "name" : "midnight",
+    "preferGlobal": true,
+    "version" : "0.0.1",
+    "description": "Web framework for building modern web applications",
+    "author": "Matias Savela <msavela@gmail.com> (http://mati.as)",
+    "repository" : {
+        "type": "git",
+        "url" : "https://github.com/msavela/midnight"
+    },
+    "keywords": [
+        "midnight",
+        "web",
+        "rest",
+        "app",
+        "application",
+        "api",
+        "framework",
+        "micro",
+        "http",
+        "server"
+    ],
+    "main" : "index",
+    "bin": {
+        "midnight": "./bin/midnight"
+    },
+    "engines": {
+        "node": "*"
+    },
+    "license" : "MIT"
+}

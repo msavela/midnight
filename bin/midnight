@@ -115,7 +115,7 @@ if(cmd == 'version') {
 
 	write(path + '/app.js', files.app(engine));
 	write(path + '/package.json', files.package(path, version));
-	write(path + '/app.js', files.readme(path));
+	write(path + '/README.md', files.readme(path));
 
 	mkdir(path + '/static/stylesheet');
 	write(path + '/static/stylesheet/style.css', files.stylesheet());

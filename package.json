@@ -1,7 +1,7 @@
 {
     "name" : "midnight",
     "preferGlobal": true,
-    "version" : "0.0.1",
+    "version" : "0.0.2",
     "description": "Web framework for building modern web applications",
     "author": "Matias Savela <msavela@gmail.com> (http://mati.as)",
     "repository" : {

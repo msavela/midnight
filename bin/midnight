@@ -63,14 +63,21 @@ var files = {
 			'}'
 		].join(os.EOL);
 	},
-	package: function(name) {
+	package: function(name, version) {
 		return JSON.stringify({
 			name: name,
 			version: '0.0.1',
 			private: true,
-			scripts: { start: 'node app.js' }
+			scripts: { start: 'node app.js' },
+			dependencies: { midnight: '' + version + '' }
 		}, null, 2);
-	}
+	},
+	readme: function(name) {
+		return [
+			'# ' + name,
+			'Hello world!'
+		].join(os.EOL);
+	},
 };
 
 function mkdir(path, callback) {
@@ -93,9 +100,10 @@ function abort(str) {
 	process.exit(1);
 }
 
-if(cmd == 'version')
-	abort(version);
-else if(cmd == 'create') {
+if(cmd == 'version') {
+	console.log(version);
+	process.exit(1);
+} else if(cmd == 'create') {
 
 	var path = args[1] || 'application';
 	var engine = args[2] || 'default';
@@ -106,7 +114,8 @@ else if(cmd == 'create') {
 	mkdir(path);
 
 	write(path + '/app.js', files.app(engine));
-	write(path + '/package.json', files.package(path));
+	write(path + '/package.json', files.package(path, version));
+	write(path + '/app.js', files.readme(path));
 
 	mkdir(path + '/static/stylesheet');
 	write(path + '/static/stylesheet/style.css', files.stylesheet());
@@ -114,18 +123,29 @@ else if(cmd == 'create') {
 	mkdir(path + '/views');
 	write(path + '/views/index.html', files.template());
 
-	abort('Created new application \'' + path + '\'');
+	console.log('Created application ' + path);
+	console.log('');
+	console.log('  Install dependencies:');
+	console.log('    > cd ' + path + ' && npm install');
+	console.log('');
+	console.log('  Run the application:');
+	console.log('    > node app');
+
+	process.exit(1);
 }
 else if(cmd == 'help') {
 	var help = args[1];
 	if(help == 'create')
-		abort('Usage: midnight create name [' + Object.keys(midnight.engines).join('|') + ']');
+		console.log('Usage: midnight create name [' + Object.keys(midnight.engines).join('|') + ']');
 	else if(help == 'engines')
-		abort('Usage: midnight engines');
+		console.log('Usage: midnight engines');
 	else
-		abort("Commands: help create engines");
+		console.log("Commands: help create engines");
+
+	process.exit(1);
 }
-else if(cmd == 'engines')
-	abort(Object.keys(midnight.engines).join(' '));
-else
+else if(cmd == 'engines') {
+	console.log(Object.keys(midnight.engines).join(' '));
+	process.exit(1);
+} else
 	abort('Unknown command');

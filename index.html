@@ -61,7 +61,7 @@
 		<p>Here's a simple <span class="midnight">Midnight</span> application:</p>
 		<pre><code class="javascript">var app = require('midnight');
 
-app.route("/", function(request, response) {
+app.route('/', function(request, response) {
 	response.send('Hello world!');
 });
 
@@ -96,7 +96,7 @@ app.start();
 						static/
 						<ul>
 							<li>
-								stylesheet/
+								stylesheets/
 								<ul>
 									<li>style.css</li>
 								</ul>
@@ -126,15 +126,15 @@ app.start();
 		<h2 id="routes">Routes</h2>
 		<p>Setting a new route is super easy:</p>
 
-		<pre><code class="javascript">app.route("/", function(request, response) {
+		<pre><code class="javascript">app.route('/', function(request, response) {
 	response.status(200)
 		.content('text/plain')
 		.send('Hello world!');
-}).method(["GET", "POST"]); // Allow GET and POST requests
+}).method(['GET', 'POST']); // Allow GET and POST requests
 </code></pre>
 
 		<p>Route parameters can be captured as shown below:</p>
-		<pre><code class="javascript">app.route("/post/:id", function(request, response) {
+		<pre><code class="javascript">app.route('/post/:id', function(request, response) {
 	app.log.info('Get post id %s', request.params.id);
 	response.status(200)
 		.set('Content-Type', 'text/plain')
@@ -160,7 +160,6 @@ app.start();
 		<p>Which is equivalent to this:</p>
 		<pre><code class="javascript">app.engine({
 	require: 'hogan.js',
-	cache: true,
 	compile: function(data, options, done) {
 		done(this.module.compile(data));
 	},
@@ -224,7 +223,7 @@ app.start();
 // Use query parsing middleware for every requests
 app.use(connect.query());
 
-app.route("/", function(request, response) {
+app.route('/', function(request, response) {
 	response.status(200).send(JSON.stringify(request.query));
 });
 </code></pre>
@@ -232,7 +231,7 @@ app.route("/", function(request, response) {
 		<p>In case a route specific middleware is required:</p>
 		<pre><code class="javascript">var connect = require('connect');
 
-app.route("/", function(request, response) {
+app.route('/', function(request, response) {
 	response.status(200).send(JSON.stringify(request.body));
 }).use(connect.json()); // Use JSON middleware just for this route</code></pre>
 
@@ -243,8 +242,8 @@ app.route("/", function(request, response) {
 	next();
 });
 
-app.route("/", function(request, response) {
-	response.send("Response status is 200");
+app.route('/', function(request, response) {
+	response.send('Response status is 200');
 })
 </code></pre>
 
@@ -283,37 +282,38 @@ app.use(connect.static(app.config.root + '/static'));
 		<h2 id="dcss">Dynamic stylesheets</h2>
 		<p>Using CSS preprocessors can greatly improve development speed and productivity.</p>
 		<p>Following examples will cover <a href="http://lesscss.org/">LESS</a>, <a href="http://sass-lang.com/">SASS</a> and <a href="http://learnboost.github.io/stylus/">Stylus</a>. However, there's plenty more to choose from.</p>
+
+		<p>Remember to <a href="#static">serve static files</a> when using dynamic stylesheets.</p>
 		
 		<h3>LESS</h3>
+		<p>Preprocess .less stylesheets from /static/stylesheets/</p>
 		<pre><code>var less = require('less-middleware');
 
+// /stylesheets/style.css
 app.use(less({
-	src: app.config.root + '/less',
-	dest: app.config.root + '/static/stylesheet',
-	compress: true
+	src: app.config.root + '/static'
 }));
 </code></pre>
 		<p>See <a href="https://github.com/emberfeather/less.js-middleware">less.js-middleware</a> for more details.</p>
 
 		<h3>SASS</h3>
+		<p>Preprocess .scss stylesheets from /static/stylesheets/</p>
 		<pre><code>var sass = require('node-sass');
 
+// /stylesheets/style.css
 app.use(sass.middleware({
-	src: app.config.root + '/sass',
-	dest: app.config.root + '/static/stylesheet',
-	debug: true,
-	outputStyle: 'compressed'
+	src: app.config.root + '/static'
 }));
 </code></pre>
 		<p>See <a href="https://github.com/andrew/node-sass">node-sass</a> for more details.</p>
 
 		<h3>Stylus</h3>
+		<p>Preprocess .styl stylesheets from /static/stylesheets/</p>
 		<pre><code>var stylus = require('stylus');
 
+// /stylesheets/style.css
 app.use(stylus.middleware({
-	src: app.config.root + '/stylus',
-	dest: app.config.root + '/static/stylesheet',
-	compile: compile
+	src: app.config.root + '/static'
 }));
 </code></pre>
 		<p>See <a href="https://github.com/LearnBoost/stylus/blob/master/docs/middleware.md">stylus</a> for more details.</p>
@@ -322,7 +322,7 @@ app.use(stylus.middleware({
 		<p>In development mode it's recommended to use error handler middleware:</p>
 		<pre><code>var connect = require('connect');
 
-if(app.config.env == "development")
+if(app.config.env == 'development')
 	app.use(connect.errorHandler());
 </code></pre>
 
@@ -330,7 +330,7 @@ if(app.config.env == "development")
 		<p><span class="midnight">Midnight</span> has a plugin system built-in to easily extend the application.</p>
 		<p>Here's how to create a new plugin:</p>
 		<pre><code class="javascript">var plugin = {
-	name: "plugin-name",
+	name: 'plugin-name',
 	attach: function(options) {
 		// Called when plugin is attached
 		// Options can be passed as a parameter
@@ -420,18 +420,18 @@ app.log.fatal('This is very bad');
 
 		<h3>app.route(pattern, [function])</h3>
 		<p>Declare a new route:</p>
-		<pre><code class="javascript">app.route('/post/:id', function() {
-	response.send(request.params.id);
+		<pre><code class="javascript">app.route('/post/:id', function(request, response) {
+	response.send(request.params);
 });</code></pre>
 
 		<p>It's possible to use regular expression as a pattern:</p>
 		<pre><code class="javascript">// Accept requests with url /post/{5-digit number}
-app.route(new RegExp('^/post/\d{5}$'), function() {
-	response.send('Success.');
+app.route(new RegExp('^\\/route\/(?:([^\\/]+?))\\/?$', 'i'), function(request, response) {
+	response.send(request.params);
 });</code></pre>
 
 		<p>Routes can be used like below to set additional parameters:</p>
-		<pre><code class="javascript">app.route('/', function() {
+		<pre><code class="javascript">app.route('/', function(request, response) {
 	response.send('Hello world!');
 }).get(); // Allow GET requests only</code></pre>
 
@@ -508,7 +508,7 @@ route.get().post().delete();</code></pre>
 		<pre><code class="javascript">var connect = require('connect');
 
 // http://localhost:8080/post?id=24
-app.route("/post", function(request, response) {
+app.route('/post', function(request, response) {
 	// Render: { id: 24 }
 	response.status(200).send(JSON.stringify(request.query))
 }).use(connect.query());</code></pre>

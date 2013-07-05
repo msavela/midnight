@@ -425,7 +425,7 @@ app.log.fatal('This is very bad');
 });</code></pre>
 
 		<p>It's possible to use regular expression as a pattern:</p>
-		<pre><code class="javascript">// Accept requests with url /post/{5-digit number}
+		<pre><code class="javascript">// Accept requests with url /route/{parameter}
 app.route(new RegExp('^\\/route\/(?:([^\\/]+?))\\/?$', 'i'), function(request, response) {
 	response.send(request.params);
 });</code></pre>

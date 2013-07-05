@@ -12,12 +12,12 @@ var os = require('os'),
 var files = {
 	app: function(engine) {
 		return [
-			'var app = require(\'midnight\')',
+			'var app = require(\'midnight\');',
 			this.connect(),
 			'// ' + Object.keys(midnight.engines).join(' '),
 			'app.engine(app.engines.' + engine + ');',
 			'',
-			'app.route("/", function(request, response) {',
+			'app.route(\'/\', function(request, response) {',
 			'	response.render(\'index.html\', { world: \'world!\' });',
 			'});',
 			'',
@@ -26,7 +26,7 @@ var files = {
 	},
 	connect: function() {
 		try {
-			require.resolve("connect");
+			require.resolve('connect');
 			return [
 				'var connect = require(\'connect\');',
 				'',
@@ -34,7 +34,7 @@ var files = {
 				'app.use(connect.query());',
 				'app.use(connect.static(app.config.root + \'/static\'));',
 				'',
-				'if(app.config.env == "development")',
+				'if(app.config.env == \'development\')',
 				'	app.use(connect.errorHandler());',
 				''
 			].join(os.EOL);
@@ -48,7 +48,7 @@ var files = {
 			'<html>',
 			'	<head>',
 			'		<title>{{ globals.title }}</title>',
-			'		<link rel=\'stylesheet\' href=\'/stylesheet/style.css\' />',
+			'		<link rel="stylesheet" href="/stylesheet/style.css" />',
 			'	</head>',
 			'	<body>',
 			'		<p>Hello {{ world }}</p>',
@@ -81,7 +81,7 @@ var files = {
 };
 
 function mkdir(path, callback) {
-	var path = path.split("/");
+	var path = path.split('/');
 	for(var i=0;i<path.length;i++) {
 		try {
 			fs.mkdirSync(path.slice(0, i+1).join('/'));
@@ -109,7 +109,7 @@ if(cmd == 'version') {
 	var engine = args[2] || 'default';
 
 	if(fs.existsSync(path))
-		abort(path + " already exists.");
+		abort(path + ' already exists.');
 
 	mkdir(path);
 
@@ -117,8 +117,8 @@ if(cmd == 'version') {
 	write(path + '/package.json', files.package(path, version));
 	write(path + '/README.md', files.readme(path));
 
-	mkdir(path + '/static/stylesheet');
-	write(path + '/static/stylesheet/style.css', files.stylesheet());
+	mkdir(path + '/static/stylesheets');
+	write(path + '/static/stylesheets/style.css', files.stylesheet());
 
 	mkdir(path + '/views');
 	write(path + '/views/index.html', files.template());
@@ -140,7 +140,7 @@ else if(cmd == 'help') {
 	else if(help == 'engines')
 		console.log('Usage: midnight engines');
 	else
-		console.log("Commands: help create engines");
+		console.log('Commands: help create engines');
 
 	process.exit(1);
 }
@@ -148,4 +148,4 @@ else if(cmd == 'engines') {
 	console.log(Object.keys(midnight.engines).join(' '));
 	process.exit(1);
 } else
-	abort('Unknown command');
+	abort('Unknown command, try midnight help');

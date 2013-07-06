@@ -5,7 +5,7 @@ Midnight is an open source web framework for node.js that makes building modern 
 ```js
 var app = require('midnight');
 
-app.route("/", function(request, response) {
+app.route('/', function(request, response) {
 	response.send('Hello world!');
 });
 

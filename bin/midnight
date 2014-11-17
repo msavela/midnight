@@ -12,7 +12,8 @@ var os = require('os'),
 var files = {
 	app: function(engine) {
 		return [
-			'var app = require(\'midnight\');',
+			'var midnight = require(\'midnight\'),',
+			'	app = midnight();',
 			this.connect(),
 			'// ' + Object.keys(midnight.engines).join(' '),
 			'app.engine(app.engines.' + engine + ');',

@@ -67,7 +67,8 @@
 			<li>A flexible plugin system</li>
 		</ul>
 		<p>Here's a simple <span class="midnight">Midnight</span> application:</p>
-		<pre><code class="javascript">var app = require('midnight');
+		<pre><code class="javascript">var midnight = require('midnight'),
+	app = midnight();
 
 app.route('/', function(request, response) {
 	response.send('Hello world!');

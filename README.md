@@ -1,4 +1,4 @@
-# Midnight
+# Midnight [![Build Status](https://travis-ci.org/msavela/midnight.svg)](https://travis-ci.org/msavela/midnight)
 
 Midnight is an open source web framework for node.js that makes building modern web applications easy.
 

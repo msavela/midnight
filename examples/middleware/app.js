@@ -1,15 +1,33 @@
-var app = require('../../');
-var connect = require('connect');
+const midnight = require("../../");
+const app = midnight();
 
-app.use(connect.query());
+const sessionMiddleware = (req, res, next) => {
+  req.user = "Steve";
+  next();
+};
 
-app.route('/', function(request, response) {
-	response.send(request.query);
+const customHeaderMiddleware = (req, res, next) => {
+  res.set("X-Session-User", req.user);
+  next();
+};
+
+const customOkMiddleware = (req, res, next) => {
+  res.send("ok");
+  next();
+};
+
+app.use(sessionMiddleware);
+
+app.route("/", (req, res) => {
+  res.send({ user: req.user });
 });
 
-// Echo JSON body with POST request and Content-Type application/json
-app.route('/middleware', function(request, response) {
-	response.send(request.body);
-}).post().use(connect.json());
+app
+  .route("/middleware", (req, res) => {
+    res.send(`Hello ${req.user}!`);
+  })
+  .use(customHeaderMiddleware);
+
+app.route("/alwaysok").use(customOkMiddleware);
 
 app.start();

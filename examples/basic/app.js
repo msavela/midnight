@@ -1,7 +1,8 @@
-var app = require('../../');
+const midnight = require("../../");
+const app = midnight();
 
-app.route('/', function(request, response) {
-	response.send('Hello world!');
+app.route("/", (req, res) => {
+  res.send("Hello world!");
 });
 
 app.start();

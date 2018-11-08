@@ -1,87 +1,78 @@
-var path = require('path'),
-	fs = require('fs'),
+const path = require("path");
+const request = require("./lib/request.js");
+const response = require("./lib/response.js");
+const pkg = require("./package.json");
 
-	request = require('./lib/request.js'),
-	response = require('./lib/response.js'),
+const loggerMiddleware = require("./lib/middleware/logger");
+const queryMiddleware = require("./lib/middleware/query");
 
-	log = require('./lib/log.js'),
+module.exports = () => {
+  const app = {
+    stack: [],
+    routes: [],
+    plugins: [],
+    cache: {},
+    config: {},
+    globals: {
+      title: "Midnight " + pkg.version
+    },
+    // Logger
+    log: require("./lib/log.js")(2),
 
-	pkg = require('./package.json');
+    // Configuration
+    configure: object => require("./lib/config.js")(app, object),
 
-var application = function() {
-	var app = {
-		stack: [],
-		routes: [],
-		plugins: [],
-		cache: {},
-		config: {},
-		globals: {
-			title: 'Midnight ' + pkg.version
-		},
+    // Start the server
+    start: config => require("./lib/server.js")(app, config),
 
-		// Configuration
-		configure: require('./lib/config.js'),
+    // Router
+    route: (pattern, handler) =>
+      require("./lib/route.js")(app, pattern, handler),
 
-		// Start the server
-		start: require('./lib/server.js'),
+    // Utils
+    utils: require("./lib/utils.js"),
 
-		// Route
-		route: require('./lib/route.js'),
+    // Middleware
+    use: fn => require("./lib/middleware.js").use(app, fn),
 
-		// Templates
-		render: require('./lib/template.js').render,
-		engine: require('./lib/template.js').engine,
-		engines: require('./lib/engines.js'),
+    // Plugins
+    plugin: (plugin, options) =>
+      require("./lib/plugin.js").attach(app, plugin, options)
+  };
 
-		// Utils
-		utils: require('./lib/utils.js'),
+  // Built-in middleware to extend request and response objects
+  app.use((req, res, next) => {
+    // Extend request
+    app.utils.merge(req, {
+      app,
+      originalUrl: req.url,
+      ...request
+    });
 
-		// Middleware
-		use: require('./lib/middleware.js').use,
+    // Extend response
+    app.utils.merge(res, {
+      app,
+      ...response
+    });
 
-		// Plugins
-		attach: require('./lib/plugin.js').attach,
+    next();
+  });
 
-		log: {
-			trace: 	function() { log.trace.apply(app, arguments) },
-			debug: 	function() { log.debug.apply(app, arguments) },
-			info: 	function() { log.info.apply(app, arguments) },
-			warn: 	function() { log.warn.apply(app, arguments) },
-			error: 	function() { log.error.apply(app, arguments) },
-			fatal: 	function() { log.fatal.apply(app, arguments) },
-			level: 	log.level
-		}
-	};
+  // Request logger middleware
+  app.use(loggerMiddleware);
 
-	// Middleware to extend request and response objects
-	app.use(function(req, res, next) {
-		// Extend request
-		request.app = app
-		app.utils.merge(req, request)
-		req.originalUrl = req.url // Add originalUrl
+  // Query parameter middleware
+  app.use(queryMiddleware);
 
-		// Extend response
-		response.app = app
-		app.utils.merge(res, response)
+  // Default configuration
+  app.configure({
+    host: "127.0.0.1",
+    port: 8080,
+    views: "/views",
+    root: path.dirname(process.mainModule.filename), // Application root path
+    env: "development", // Development mode
+    version: pkg.version
+  });
 
-		next();
-	});
-
-	// Default configuration
-	app.configure({
-		host: '127.0.0.1',
-		port: 8080,
-		views: '/views',
-		root: path.dirname(process.mainModule.filename), // Application root path,
-		env: 'development', // Development mode,
-		log: app.log.level.info, // Loglevel
-		version: pkg.version
-	});
-
-	// Use default template engine
-	app.engine(app.engines.default);
-
-	return app;
+  return app;
 };
-
-module.exports = application

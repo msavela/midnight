@@ -1,13 +1,16 @@
-var app = require('../../');
+const midnight = require("../../");
+const app = midnight();
 
-// Attach the plugin with optional parameters
-app.attach(require('./plugin.js'));
+// Attach the plugin with parameters
+// Plugin extends the app with `sky` property
+app.plugin(require("./plugin.js"), {
+  color: "blue"
+});
 
-// Use the custom template engine
-app.engine(app.engines.custom);
-
-app.route('/', function(request, response) {
-	response.render('index.html', { hello: 'Hello world!' });
+app.route("/", (req, res) => {
+  res.send({
+    sky: req.app.sky
+  });
 });
 
 app.start();

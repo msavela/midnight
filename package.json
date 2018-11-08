@@ -1,38 +1,32 @@
 {
-    "name": "midnight",
-    "version" : "0.0.4",
-    "description": "Web framework for building modern web applications",
-    "author": "Matias Savela <msavela@gmail.com> (http://mati.as)",
-    "repository": {
-        "type": "git",
-        "url" : "https://github.com/msavela/midnight"
-    },
-    "keywords": [
-        "midnight",
-        "web",
-        "rest",
-        "app",
-        "application",
-        "api",
-        "framework",
-        "http",
-        "server"
-    ],
-    "devDependencies": {
-        "mocha": "~2.0.0",
-        "supertest": "~0.15.0",
-        "istanbul": "~0.3.0"
-    },
-    "main": "index",
-    "bin": {
-        "midnight": "./bin/midnight"
-    },
-    "engines": {
-        "node": ">= 0.10.0"
-    },
-    "license": "MIT",
-    "scripts": {
-        "test": "mocha --reporter spec --bail --check-leaks test/",
-        "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks test/"
-    }
+  "name": "midnight",
+  "version": "0.1.0",
+  "description": "Web framework for building modern web applications",
+  "author": "Matias Savela <msavela@gmail.com> (http://mati.as)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/msavela/midnight"
+  },
+  "keywords": [
+    "midnight",
+    "web",
+    "rest",
+    "app",
+    "application",
+    "api",
+    "framework",
+    "http",
+    "server"
+  ],
+  "devDependencies": {
+    "mocha": "~2.0.0",
+    "supertest": "~0.15.0",
+    "istanbul": "~0.3.0"
+  },
+  "scripts": {
+    "test": "mocha --reporter spec --bail --check-leaks test/",
+    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks test/"
+  },
+  "main": "index",
+  "license": "MIT"
 }

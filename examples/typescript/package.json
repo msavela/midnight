@@ -1,0 +1,17 @@
+{
+  "name": "typescript-example",
+  "version": "1.0.0",
+  "description": "TypeScript example for midnight",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "build": "tsc",
+    "start:dev": "npm run build && node dist/app.js"
+  },
+  "dependencies": {
+    "midnight": "file:../.."
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

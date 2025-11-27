@@ -15,7 +15,7 @@ app.start();
 
 ## Installation
 
-> yarn add midnight
+> npm i midnight
 
 ## Typescript Support
 

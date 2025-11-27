@@ -1,6 +1,6 @@
 {
   "name": "midnight",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Web framework for building modern web applications",
   "author": "Matias Savela <msavela@gmail.com> (http://mati.as)",
   "repository": {
@@ -20,13 +20,13 @@
   ],
   "devDependencies": {
     "@types/node": "^24.10.1",
-    "istanbul": "~0.3.0",
-    "mocha": "~2.0.0",
-    "supertest": "~0.15.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^11.7.5",
+    "supertest": "^7.1.4",
     "typescript": "^5.9.3"
   },
   "scripts": {
-    "test": "mocha --reporter spec --bail --check-leaks test/",
+    "test": "mocha --reporter spec --bail --check-leaks test/ --exit",
     "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks test/",
     "build": "tsc",
     "prepublishOnly": "npm run build"

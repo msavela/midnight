@@ -5,7 +5,7 @@ const response = require("./lib/response.js");
 const loggerMiddleware = require("./lib/middleware/logger");
 const queryMiddleware = require("./lib/middleware/query");
 
-const VERSION = "0.2.0";
+const VERSION = "0.2.1";
 
 /**
  * @typedef {import("midnight").Request} Request
